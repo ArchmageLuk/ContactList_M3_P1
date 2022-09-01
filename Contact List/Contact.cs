@@ -10,13 +10,15 @@ namespace Contact_List
     {
         public string Name { get; set; }
         public int Number { get; set; }
+        public string Culture { get; set; }
 
-        public Contact(string name, int number)
+        public Contact(string name, int number, string cult)
         {
             if (name != null)
             {
                 Name = name;
                 Number = number;
+                Culture = cult;
             }
             else
             {

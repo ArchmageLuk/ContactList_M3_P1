@@ -9,7 +9,6 @@ namespace Contact_List
 {
     internal class Culture
     {
-        readonly CultureInfo myEng = new CultureInfo("en-US", false);
-        readonly CultureInfo myRus = new CultureInfo("ru-Ru", false);
+        
     }
 }
