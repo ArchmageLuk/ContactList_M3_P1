@@ -12,24 +12,29 @@ namespace Contact_List
         string ContactsPathEN = @"D:/Projects/C# learning/Code/ContactList_M3_P1/Contact List/Contact_List_EN.txt";
         string ContactsPathUA = @"D:/Projects/C# learning/Code/ContactList_M3_P1/Contact List/Contact_List_UA.txt";
         string ContactsPathOther = @"D:/Projects/C# learning/Code/ContactList_M3_P1/Contact List/Contact_List_Other.txt";
+        string ContactsPathNumbers = @"D:/Projects/C# learning/Code/ContactList_M3_P1/Contact List/Contact_List_Numbers.txt";
 
         char[] AlphabetEN = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".ToCharArray();
         char[] AlphabetUA = "АБВГҐДЕЄЖЗИІЇКЛМНОПРСТУФХЦЧШЩЬЮЯ".ToCharArray();
         char[] AlphabetOther = "#".ToCharArray();
+        char[] AlphabetNumbers = "1234567890".ToCharArray();
                 
         Dictionary<string, List<Contact>> ContactListEN { get; set; }
         Dictionary<string, List<Contact>> ContactListUA { get; set; }
         Dictionary<string, List<Contact>> ContactListOther { get; set; }
+        Dictionary<string, List<Contact>> ContactListNumbers { get; set; }
 
         public ContactList()
         {    
             ContactListEN = CreateAlphDict(AlphabetEN);
             ContactListUA = CreateAlphDict(AlphabetUA);
             ContactListOther = CreateAlphDict(AlphabetOther);
+            ContactListNumbers = CreateAlphDict(AlphabetNumbers);
 
             TextToDict(ContactsPathEN, "EN");
             TextToDict(ContactsPathUA, "UA");
             TextToDict(ContactsPathOther, "Other");
+            TextToDict(ContactsPathNumbers, "Number");
         }
 
         //INTERACTIONS----------------------------------------------------
@@ -88,7 +93,7 @@ namespace Contact_List
             {
                 var letString = letter.ToString();
                 var list = new List<Contact>();
-                var nullContact = new Contact($"No contacts", 0, "Nocult");
+                var nullContact = new Contact($"No contacts", 0);
                 list.Add(nullContact);
                 dict.Add(letString, list);
                 list.Clear();
@@ -104,6 +109,11 @@ namespace Contact_List
 
             ContToDict(contact);
 
+            DictToText(ContactListEN, ContactsPathEN);
+            DictToText(ContactListUA, ContactsPathUA);
+            DictToText(ContactListNumbers, ContactsPathNumbers);
+            DictToText(ContactListOther, ContactsPathOther);
+
             ShowList();
             Run();
         }
@@ -113,25 +123,47 @@ namespace Contact_List
             char[] nameAnalysis = contact.Name.ToCharArray();
 
             var path = "EmptyPath";
-            
-            if (contact.Culture == "EN")
+            bool check = false;
+
+            foreach (char letter in AlphabetEN)
             {
-                path = ContactsPathEN;
-                AddToDict(nameAnalysis[0], ContactListEN, contact);
-                DictToText(ContactListEN, path);
+                if (letter == nameAnalysis[0])
+                {
+                    AddToDict(nameAnalysis[0], ContactListEN, contact);
+                    contact.Culture = "en-US";
+                    check = true;
+                    break;
+                }
             }
-            else if (contact.Culture == "UA")
+
+            foreach (char letter in AlphabetUA)
             {
-                path = ContactsPathUA;
-                AddToDict(nameAnalysis[0], ContactListUA, contact);
-                DictToText(ContactListUA, path);
+                if (letter == nameAnalysis[0])
+                {
+                    AddToDict(nameAnalysis[0], ContactListUA, contact);
+                    contact.Culture = "ua-UA";
+                    check = true;
+                    break;
+                }
             }
-            else
+
+            foreach (char letter in AlphabetNumbers)
             {
-                path = ContactsPathOther;
+                if (letter == nameAnalysis[0])
+                {
+                    AddToDict(nameAnalysis[0], ContactListNumbers, contact);
+                    contact.Culture = "Number";
+                    check = true;
+                    break;
+                }
+            }
+
+            if (check == false)
+            {
                 AddToDict(nameAnalysis[0], ContactListOther, contact);
-                DictToText(ContactListOther, path);
+                contact.Culture = "Other";
             }
+            
 
             void AddToDict(char symbol, Dictionary<string, List<Contact>> dict, Contact cont)
             {
@@ -179,7 +211,7 @@ namespace Contact_List
                     var arrLine = line.Split(" - ");
                     var name = arrLine[0];
                     var number = Int32.Parse(arrLine[1]);
-                    var contact = new Contact(name, number, cult);
+                    var contact = new Contact(name, number);
                     ContToDict(contact);
                 }
             }
@@ -189,9 +221,6 @@ namespace Contact_List
         void AddNumber()
         {
             Console.WriteLine(" ");
-            Console.WriteLine("What type of number you want to add - EN, UA or Other?");
-            string cult = Console.ReadLine();
-
             Console.WriteLine("Please enter the name");
             string name = Console.ReadLine();
 
@@ -200,7 +229,7 @@ namespace Contact_List
 
             if (name != null & number != 0)
             {
-                var contact = new Contact(name, number, cult);
+                var contact = new Contact(name, number);
                 Save(contact);
                 Run();
             }
@@ -270,7 +299,7 @@ namespace Contact_List
         void ClearAll()
         {
             Console.WriteLine(" ");
-            Console.WriteLine("Clear EN, UA or Other?");
+            Console.WriteLine("Clear EN, UA, Numbers or Other?");
             var clearWhat = Console.ReadLine();
 
             switch (clearWhat)
@@ -282,6 +311,10 @@ namespace Contact_List
                 case "UA":
                     File.Delete(ContactsPathUA);
                     File.Create(ContactsPathUA);
+                    break;
+                case "Numbers":
+                    File.Delete(ContactsPathNumbers);
+                    File.Create(ContactsPathNumbers);
                     break;
                 case "Other":
                     File.Delete(ContactsPathOther);
@@ -299,7 +332,7 @@ namespace Contact_List
         {
             Console.WriteLine(" ");
             Console.WriteLine("-------------------------------------------------------------------------------------------");
-            Console.WriteLine($"There is {Counting(ContactListEN)} EN, {Counting(ContactListUA)} UA and {Counting(ContactListOther)} Other contacts now");
+            Console.WriteLine($"There is {Counting(ContactListEN)} EN, {Counting(ContactListUA)} UA, {Counting(ContactListNumbers)} and {Counting(ContactListOther)} Other contacts now");
 
             void Display(Dictionary<string, List<Contact>> dictionary)
             {
@@ -318,6 +351,8 @@ namespace Contact_List
             Display(ContactListEN);
             Console.WriteLine("UKRAINIAN CONTACTS-----------------------------------------------------------------");
             Display(ContactListUA);
+            Console.WriteLine("NUMBER CONTACTS--------------------------------------------------------------------");
+            Display(ContactListNumbers);
             Console.WriteLine("OTHER CONTACTS---------------------------------------------------------------------");
             Display(ContactListOther);
             Run();

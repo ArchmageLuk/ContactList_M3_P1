@@ -12,13 +12,12 @@ namespace Contact_List
         public int Number { get; set; }
         public string Culture { get; set; }
 
-        public Contact(string name, int number, string cult)
+        public Contact(string name, int number)
         {
             if (name != null)
             {
                 Name = name;
                 Number = number;
-                Culture = cult;
             }
             else
             {
