@@ -1,0 +1,6 @@
+﻿
+Using dictionary list, create phone contact list
+
+TO DO:
+1. Create module to write new contact into Collection (done) and to .txt file
+2. 
